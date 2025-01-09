@@ -174,9 +174,11 @@ def add_to_cart():
     return redirect(url_for('products'))
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))  # Renderでは環境変数PORTが指定される
-    app.run(host='0.0.0.0', port=port)
-
-#if __name__ == '__main__':
-#    app.run(debug=True)
-
+    environment = os.environ.get('ENV', 'local')  # デフォルトは'local'
+    if environment == 'render':
+        port = int(os.environ.get('PORT', 5000))
+        print(f"Running on Render with port {port}")
+        app.run(host='0.0.0.0', port=port)
+    else:
+        print("Running locally")
+        app.run(debug=True)
