@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 import sqlite3
 from auth_utils import register_user, check_password  # auth_utilsからインポート
+import os
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
@@ -173,5 +174,9 @@ def add_to_cart():
     return redirect(url_for('products'))
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get('PORT', 5000))  # Renderでは環境変数PORTが指定される
+    app.run(host='0.0.0.0', port=port)
+
+#if __name__ == '__main__':
+#    app.run(debug=True)
 
