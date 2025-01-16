@@ -1,9 +1,18 @@
 <!DOCTYPE html>
-<html>
-<head><title>Thank You</title></head>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ご購入ありがとうございます</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
 <body>
-    <h1>Thank You for Your Purchase!</h1>
-    <p>Your order has been successfully completed.</p>
-    <a href="{{ url_for('products') }}">Back to Products</a>
+    <div class="container">
+        <h1>ご購入ありがとうございます！</h1>
+        <p>ご注文が正常に完了しました。</p>
+        <a href="{{ url_for('products') }}" class="btn">商品一覧に戻る</a>
+    </div>
 </body>
 </html>
+
