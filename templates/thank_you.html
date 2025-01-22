@@ -11,7 +11,10 @@
     <div class="container">
         <h1>ご購入ありがとうございます！</h1>
         <p>ご注文が正常に完了しました。</p>
-        <a href="{{ url_for('products') }}" class="btn">商品一覧に戻る</a>
+        <div class="action-buttons">
+            <a href="{{ url_for('products') }}" class="btn">商品一覧に戻る</a>
+            <a href="{{ url_for('logout') }}" class="btn btn-secondary">ログアウト</a>
+        </div>
     </div>
 </body>
 </html>

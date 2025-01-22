@@ -5,29 +5,103 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>カート</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="/static/styles.css">
+    <script src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
 </head>
 <body>
     <div class="container">
-        <h1>カート</h1>
-        {% if cart_items %}
-            <ul class="cart-list">
-                {% for item in cart_items %}
-                <li class="cart-item">
-                    <h2>{{ item[0] }}</h2>
-                    <p>数量: {{ item[1] }}</p>
-                    <p>価格: ¥{{ item[2] }}</p>
-                </li>
-                {% endfor %}
-            </ul>
-            <p class="total">合計: ¥{{ total }}</p>
-            <form action="{{ url_for('checkout') }}" method="POST">
-                <button type="submit" class="btn btn-accent">購入する</button>
-            </form>
-        {% else %}
-            <p>カートは空です。</p>
-        {% endif %}
-        <a href="{{ url_for('products') }}" class="btn">商品一覧に戻る</a>
+        <div id="cart-root"></div>
+        <script type="text/babel">
+            const Cart = () => {
+                const [cartItems, setCartItems] = React.useState([]);
+                const [total, setTotal] = React.useState(0);
+                const [isLoading, setIsLoading] = React.useState(true);
+        
+                React.useEffect(() => {
+                    fetch('/cart-data')
+                        .then(response => response.json())
+                        .then(data => {
+                            setCartItems(data);
+                            const totalAmount = data.reduce((sum, item) => sum + item.quantity * item.price, 0);
+                            setTotal(totalAmount);
+                        })
+                        .finally(() => setIsLoading(false));
+                }, []);
+        
+                const handlePurchase = () => {
+                    fetch('/checkout', { method: 'POST' })
+                        .then(response => {
+                            if (response.ok) {
+                                alert('購入が完了しました！');
+                                setCartItems([]);
+                                setTotal(0);
+                                window.location.href = '/thank-you';
+                            } else {
+                                alert('購入に失敗しました。');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('エラー:', error);
+                            alert('購入中にエラーが発生しました。');
+                        });
+                };
+        
+                if (isLoading) {
+                    return (
+                        <div className="loading-screen">
+                            <p>Loading...</p>
+                        </div>
+                    );
+                }
+        
+                if (cartItems.length === 0) {
+                    return (
+                        <div className="cart-empty">
+                            <h1>カート</h1>
+                            <p>カートは空です。</p>
+                            <a href="/products" className="btn">商品一覧に戻る</a>
+                        </div>
+                    );
+                }
+        
+                return (
+                    <div className="cart-container">
+                        <h1>カート</h1>
+                        <table className="cart-table">
+                            <thead>
+                                <tr>
+                                    <th>商品名</th>
+                                    <th>数量</th>
+                                    <th>価格</th>
+                                    <th>小計</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {cartItems.map((item, index) => (
+                                    <tr key={index}>
+                                        <td>{item.name}</td>
+                                        <td>{item.quantity}</td>
+                                        <td>¥{item.price.toLocaleString('ja-JP')}</td>
+                                        <td>¥{(item.quantity * item.price).toLocaleString('ja-JP')}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                        <div className="cart-summary">
+                            <p className="cart-total">合計: <span>¥{total.toLocaleString('ja-JP')}</span></p>
+                            <button onClick={handlePurchase} className="btn btn-accent btn-large">
+                                購入する
+                            </button>
+                        </div>
+                        <a href="/products" className="btn btn-secondary">商品一覧に戻る</a>
+                    </div>
+                );
+            };
+        
+            ReactDOM.render(<Cart />, document.getElementById('cart-root'));
+        </script>
     </div>
 </body>
 </html>

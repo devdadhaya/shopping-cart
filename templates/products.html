@@ -14,7 +14,7 @@
             {% for product in products %}
             <div class="product-item">
                 <h2>{{ product[1] }}</h2>
-                <p>価格: ¥{{ product[2] }}</p>
+                <p class="price" data-price="{{ product[2] }}">価格: ¥</p>
                 <form action="{{ url_for('add_to_cart') }}" method="POST">
                     <input type="hidden" name="product_id" value="{{ product[0] }}">
                     <button type="submit" class="btn">カートに追加</button>
@@ -22,8 +22,20 @@
             </div>
             {% endfor %}
         </div>
-        <a href="{{ url_for('view_cart') }}" class="btn btn-accent">カートを見る</a>
+        <div class="action-buttons">
+            <a href="{{ url_for('view_cart') }}" class="btn btn-accent">カートを見る</a>
+            <a href="{{ url_for('logout') }}" class="btn btn-secondary">ログアウト</a>
+        </div>
     </div>
+
+    <script>
+        document.querySelectorAll('.price').forEach(priceElement => {
+            const price = parseFloat(priceElement.getAttribute('data-price'));
+            if (!isNaN(price)) {
+                priceElement.textContent = `価格: ¥${price.toLocaleString('ja-JP')}`;
+            }
+        });
+    </script>
 </body>
 </html>
 
